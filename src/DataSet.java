@@ -8,44 +8,40 @@ import java.util.*;
  * This class is data model of the data set. It contains helper functions for converting from / to a data set.
  * <p>
  * The data structures, while of interface type List, should be of actual type ArrayList for constant time indexing,
- * except in the case of the list of observations where constant time indexing does not matter. However, each list in
- * the observations should be ArrayList, again for constant time indexing. List are used instead of simple 2 dimensional
+ * except in the case of the list of examples where constant time indexing does not matter. However, each list in
+ * the examples should be ArrayList, again for constant time indexing. List are used instead of simple 2 dimensional
  * arrays because they are more flexible and give easy access to Java 8 streams.
  */
 class DataSet {
     private static final String WHITE_SPACE_REGEX = "\\s+";
     // attribute names are names for attributes and their order is in the same as the attribute values order
-    // in the observations.
+    // in the examples.
     private final List<String> attributeNames;
-    // observations (aka examples) is a list of observations where each has a list of attribute values.
-    private final List<List<Boolean>> observations;
-    // labels are an ordered list of class labels associated with each observation.
-    private final List<Boolean> labels;
+    // examples (aka examples) is a list of examples where each has a list of attribute values.
+    private final List<List<Double>> examples;
+    // labels are an ordered list of class labels associated with each example.
+    private final List<Double> labels;
 
     /**
-     * @param attributeNames attribute names associated with the attribute values in the observations list.
-     * @param observations   a list of observations (aka examples) where each contains a list of attribute values.
-     * @param labels         class labels that are associated with each observation.
-     * @throws IllegalArgumentException if size of attribute names does not equal observation size.
-     *                                  if size of labels does not equal observation size.
+     * @param attributeNames attribute names associated with the attribute values in the examples list.
+     * @param examples       a list of examples (aka examples) where each contains a list of attribute values.
+     * @param labels         class labels that are associated with each example.
+     * @throws IllegalArgumentException if size of attribute names does not equal example size.
+     *                                  if size of labels does not equal example size.
      */
-    DataSet(List<String> attributeNames, List<List<Boolean>> observations, List<Boolean> labels) {
-        if (attributeNames.size() != observations.get(0).size())
+    DataSet(List<String> attributeNames, List<List<Double>> examples, List<Double> labels) {
+        if (attributeNames.size() != examples.get(0).size())
             throw new IllegalArgumentException("There must exist an attribute name for each attribute.");
-        if (labels.size() != observations.size())
-            throw new IllegalArgumentException("There must exists a label for each observation.");
+        if (labels.size() != examples.size())
+            throw new IllegalArgumentException("There must exists a label for each example.");
 
         this.attributeNames = Collections.unmodifiableList(attributeNames);
-        this.observations = Collections.unmodifiableList(observations);
+        this.examples = Collections.unmodifiableList(examples);
         this.labels = Collections.unmodifiableList(labels);
     }
 
-    List<List<Boolean>> getObservations() {
-        return observations;
-    }
-
-    List<Boolean> getLabels() {
-        return labels;
+    List<List<Double>> getExamples() {
+        return examples;
     }
 
     List<String> getAttributeNames() {
@@ -71,11 +67,11 @@ class DataSet {
         sb.append("\n");
 
         int labelIndex = 0;
-        for (List<Boolean> elements : observations) {
+        for (List<Double> elements : examples) {
             for (int i = 0; i < elements.size(); ++i) {
-                sb.append(elements.get(i) ? "1 " : "0 ");
+                sb.append(isEqual(elements.get(i), 1.0, 0.001) ? "1 " : "0 ");
                 if (i == elements.size() - 1)
-                    sb.append(labels.get(labelIndex) ? "1" : "0");
+                    sb.append(isEqual(labels.get(labelIndex), 1.0, 0.001) ? "1" : "0");
             }
             sb.append("\n");
             ++labelIndex;
@@ -92,8 +88,8 @@ class DataSet {
      */
     static DataSet fromFile(String path) throws IOException {
         List<String> attributeNames;
-        List<List<Boolean>> observations = new LinkedList<>();
-        List<Boolean> labels = new ArrayList<>();
+        List<List<Double>> examples = new LinkedList<>();
+        List<Double> labels = new ArrayList<>();
 
         File f = new File(path);
 
@@ -105,20 +101,24 @@ class DataSet {
             while ((line = br.readLine()) != null) {
                 if (!line.isEmpty()) {
                     String[] elements = line.split(WHITE_SPACE_REGEX);
-                    List<Boolean> attributeValues = new ArrayList<>(elements.length - 1);
+                    List<Double> attributeValues = new ArrayList<>(elements.length - 1);
 
                     for (int i = 0; i < elements.length; ++i) {
                         boolean isOne = elements[i].equals("1");
                         if (i == elements.length - 1)
-                            labels.add(isOne);
+                            labels.add(isOne ? 1.0 : 0);
                         else
-                            attributeValues.add(isOne);
+                            attributeValues.add(isOne ? 1.0 : 0);
                     }
-                    observations.add(attributeValues);
+                    examples.add(attributeValues);
                 }
             }
         }
-        return new DataSet(attributeNames, observations, labels);
+        return new DataSet(attributeNames, examples, labels);
+    }
+
+    private static boolean isEqual(double a, double b, double epsilon) {
+        return Math.abs(a - b) < epsilon;
     }
 
     /**
@@ -144,6 +144,14 @@ class DataSet {
             attributeNames = Arrays.asList(Arrays.copyOfRange(words, 0, words.length - 1));
         }
         return Optional.ofNullable(attributeNames);
+    }
+
+    List<Double> getExample(int i) {
+        return examples.get(i);
+    }
+
+    double getLabel(int i) {
+        return labels.get(i);
     }
 
     static class EmptyFileException extends IOException {
