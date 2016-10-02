@@ -1,19 +1,42 @@
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Scanner;
 
 import static org.junit.Assert.assertEquals;
 
 public class PerceptronTest {
+    private static final String TRAIN_SET_1_PATH = "resources/dataSet1/train2.dat";
+    private static final String TEST_SET_1_PATH = "resources/dataSet1/test2.dat";
+    private static final String TRAIN_SET_2_PATH = "resources/dataSet2/train5.dat";
+    private static final String TEST_SET_2_PATH = "resources/dataSet2/test5.dat";
     private final ByteArrayOutputStream out = new ByteArrayOutputStream();
+    private static DataSet trainSet1;
+    private static DataSet testSet1;
+    private static DataSet trainSet2;
+    private static DataSet testSet2;
+
+    @BeforeClass
+    public static void setup() {
+        try {
+            trainSet1 = DataSet.fromFile(TRAIN_SET_1_PATH);
+            testSet1 = DataSet.fromFile(TEST_SET_1_PATH);
+            trainSet2 = DataSet.fromFile(TRAIN_SET_2_PATH);
+            testSet2 = DataSet.fromFile(TEST_SET_2_PATH);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Before
-    public void setup() {
+    public void arrange() {
         System.setOut(new PrintStream(out));
     }
 
@@ -50,68 +73,90 @@ public class PerceptronTest {
     }
 
     @Test
-    public void createPerceptron() {
-        final String dataSet = "Gee Fee Bee\n" +
-                "0 0 1 0\n" +
-                "1 0 1 0\n" +
-                "0 1 1 0\n" +
-                "1 1 1 1\n";
-        final String expectedOutput = "After iteration 1: w(Gee) = 0.0000, w(Fee) = 0.0000, w(Bee) = -0.0375, output = 0.4906\n" +
-                "After iteration 2: w(Gee) = -0.0368, w(Fee) = 0.0000, w(Bee) = -0.0743, output = 0.4723\n" +
-                "After iteration 3: w(Gee) = -0.0368, w(Fee) = -0.0361, w(Bee) = -0.1103, output = 0.4635\n" +
-                "After iteration 4: w(Gee) = 0.0038, w(Fee) = 0.0045, w(Bee) = -0.0698, output = 0.4846\n" +
-                "After iteration 5: w(Gee) = 0.0038, w(Fee) = 0.0045, w(Bee) = -0.1059, output = 0.4735\n" +
-                "After iteration 6: w(Gee) = -0.0317, w(Fee) = 0.0045, w(Bee) = -0.1414, output = 0.4568\n" +
-                "After iteration 7: w(Gee) = -0.0317, w(Fee) = -0.0302, w(Bee) = -0.1762, output = 0.4486\n" +
-                "After iteration 8: w(Gee) = 0.0097, w(Fee) = 0.0111, w(Bee) = -0.1348, output = 0.4715\n" +
-                "After iteration 9: w(Gee) = 0.0097, w(Fee) = 0.0111, w(Bee) = -0.1696, output = 0.4577\n" +
-                "After iteration 10: w(Gee) = -0.0246, w(Fee) = 0.0111, w(Bee) = -0.2039, output = 0.4431\n" +
-                "After iteration 11: w(Gee) = -0.0246, w(Fee) = -0.0225, w(Bee) = -0.2375, output = 0.4354\n" +
-                "After iteration 12: w(Gee) = 0.0173, w(Fee) = 0.0195, w(Bee) = -0.1956, output = 0.4604\n" +
-                "After iteration 13: w(Gee) = 0.0173, w(Fee) = 0.0195, w(Bee) = -0.2291, output = 0.4430\n" +
-                "After iteration 14: w(Gee) = -0.0159, w(Fee) = 0.0195, w(Bee) = -0.2623, output = 0.4309\n" +
-                "After iteration 15: w(Gee) = -0.0159, w(Fee) = -0.0130, w(Bee) = -0.2947, output = 0.4237\n" +
-                "After iteration 16: w(Gee) = 0.0265, w(Fee) = 0.0294, w(Bee) = -0.2523, output = 0.4510\n" +
-                "After iteration 17: w(Gee) = 0.0265, w(Fee) = 0.0294, w(Bee) = -0.2846, output = 0.4293\n" +
-                "After iteration 18: w(Gee) = -0.0056, w(Fee) = 0.0294, w(Bee) = -0.3168, output = 0.4201\n" +
-                "After iteration 19: w(Gee) = -0.0056, w(Fee) = -0.0021, w(Bee) = -0.3483, output = 0.4133\n" +
-                "After iteration 20: w(Gee) = 0.0371, w(Fee) = 0.0406, w(Bee) = -0.3055, output = 0.4433\n" +
-                "After iteration 21: w(Gee) = 0.0371, w(Fee) = 0.0406, w(Bee) = -0.3366, output = 0.4166\n" +
-                "After iteration 22: w(Gee) = 0.0059, w(Fee) = 0.0406, w(Bee) = -0.3678, output = 0.4105\n" +
-                "After iteration 23: w(Gee) = 0.0059, w(Fee) = 0.0100, w(Bee) = -0.3984, output = 0.4041\n" +
-                "After iteration 24: w(Gee) = 0.0489, w(Fee) = 0.0530, w(Bee) = -0.3554, output = 0.4370\n" +
-                "After iteration 25: w(Gee) = 0.0489, w(Fee) = 0.0530, w(Bee) = -0.3854, output = 0.4048\n" +
-                "After iteration 26: w(Gee) = 0.0185, w(Fee) = 0.0530, w(Bee) = -0.4158, output = 0.4020\n" +
-                "After iteration 27: w(Gee) = 0.0185, w(Fee) = 0.0232, w(Bee) = -0.4455, output = 0.3960\n" +
-                "After iteration 28: w(Gee) = 0.0617, w(Fee) = 0.0664, w(Bee) = -0.4024, output = 0.4319\n" +
-                "After iteration 29: w(Gee) = 0.0617, w(Fee) = 0.0664, w(Bee) = -0.4312, output = 0.3938\n" +
-                "After iteration 30: w(Gee) = 0.0321, w(Fee) = 0.0664, w(Bee) = -0.4609, output = 0.3944\n\n" +
-                "Accuracy on training set (4 instances): 75.0%\n\n" +
-                "Accuracy on test set (4 instances): 75.0%\n";
-        DataSet trainingAndTest = convertToSet(dataSet); // training and test same are the same in this case.
-        Perceptron.learn(trainingAndTest, trainingAndTest, 0.3, 30);
+    public void learn_handlesDataSet2WithThirtyIterationsAndPointThreeLearningRate() throws IOException {
+        final int numOfIterations = 30;
+        final double learningRate = 0.3;
+        final String outputPath = "resources/dataSet2/sample-output/t5a0.3i30.txt";
+        final String expectedOutput = new Scanner(new File(outputPath)).useDelimiter("\\Z").next();
+
+        Perceptron.learn(trainSet2, testSet2, learningRate, numOfIterations);
         assertEquals(expectedOutput, out.toString());
     }
 
-    private static DataSet convertToSet(String data) {
-        final String whitespaceRegex = "\\s+";
-        String[] lines = data.split("\\n");
-        List<List<Double>> observations = new LinkedList<>();
-        List<String> attributeNames = Arrays.asList(lines[0].split(whitespaceRegex));
-        List<Double> labels = new ArrayList<>(observations.size());
+    @Test
+    public void learn_handlesDataSet2WithSixtyIterationsAndPointThreeLearningRate() throws IOException {
+        final int numOfIterations = 60;
+        final double learningRate = 0.3;
+        final String outputPath = "resources/dataSet2/sample-output/t5a0.3i60.txt";
+        final String expectedOutput = new Scanner(new File(outputPath)).useDelimiter("\\Z").next();
 
-        for (int i = 1; i < lines.length; ++i) {
-            String[] rowValues = lines[i].split(whitespaceRegex);
-            labels.add(rowValues[rowValues.length - 1].equals("1") ? 1.0 : 0.0);
+        Perceptron.learn(trainSet2, testSet2, learningRate, numOfIterations);
+        assertEquals(expectedOutput, out.toString());
+    }
 
-            List<Double> attributeValues = new ArrayList<>(rowValues.length);
+    @Test
+    public void learn_handlesDataSet2WithThirtyIterationsAndPointNineLearningRate() throws IOException {
+        final int numOfIterations = 30;
+        final double learningRate = 0.9;
+        final String outputPath = "resources/dataSet2/sample-output/t5a0.9i30.txt";
+        final String expectedOutput = new Scanner(new File(outputPath)).useDelimiter("\\Z").next();
 
-            for (int j = 0; j < rowValues.length - 1; ++j) {
-                attributeValues.add(rowValues[j].equals("1") ? 1.0 : 0.0);
-            }
+        Perceptron.learn(trainSet2, testSet2, learningRate, numOfIterations);
+        assertEquals(expectedOutput, out.toString());
+    }
 
-            observations.add(attributeValues);
-        }
-        return new DataSet(attributeNames, observations, labels);
+    @Test
+    public void learn_handlesDataSet2WithSixtyIterationsAndPointNineLearningRate() throws IOException {
+        final int numOfIterations = 60;
+        final double learningRate = 0.9;
+        final String outputPath = "resources/dataSet2/sample-output/t5a0.9i60.txt";
+        final String expectedOutput = new Scanner(new File(outputPath)).useDelimiter("\\Z").next();
+
+        Perceptron.learn(trainSet2, testSet2, learningRate, numOfIterations);
+        assertEquals(expectedOutput, out.toString());
+    }
+
+    @Test
+    public void learn_handlesDataSet1With400IterationsAndPointThreeLearningRate() throws IOException {
+        final int numOfIterations = 400;
+        final double learningRate = 0.3;
+        final String outputPath = "resources/dataSet1/sample-output/t2a0.3i400.txt";
+        final String expectedOutput = new Scanner(new File(outputPath)).useDelimiter("\\Z").next();
+
+        Perceptron.learn(trainSet1, testSet1, learningRate, numOfIterations);
+        assertEquals(expectedOutput, out.toString());
+    }
+
+    @Test
+    public void learn_handlesDataSet1With800IterationsAndPointThreeLearningRate() throws IOException {
+        final int numOfIterations = 800;
+        final double learningRate = 0.3;
+        final String outputPath = "resources/dataSet1/sample-output/t2a0.3i800.txt";
+        final String expectedOutput = new Scanner(new File(outputPath)).useDelimiter("\\Z").next();
+
+        Perceptron.learn(trainSet1, testSet1, learningRate, numOfIterations);
+        assertEquals(expectedOutput, out.toString());
+    }
+
+    @Test
+    public void learn_handlesDataSet1With400IterationsAndPointNineLearningRate() throws IOException {
+        final int numOfIterations = 400;
+        final double learningRate = 0.9;
+        final String outputPath = "resources/dataSet1/sample-output/t2a0.9i400.txt";
+        final String expectedOutput = new Scanner(new File(outputPath)).useDelimiter("\\Z").next();
+
+        Perceptron.learn(trainSet1, testSet1, learningRate, numOfIterations);
+        assertEquals(expectedOutput, out.toString());
+    }
+
+    @Test
+    public void learn_handlesDataSet1With800IterationsAndPointNineLearningRate() throws IOException {
+        final int numOfIterations = 800;
+        final double learningRate = 0.9;
+        final String outputPath = "resources/dataSet1/sample-output/t2a0.9i800.txt";
+        final String expectedOutput = new Scanner(new File(outputPath)).useDelimiter("\\Z").next();
+
+        Perceptron.learn(trainSet1, testSet1, learningRate, numOfIterations);
+        assertEquals(expectedOutput, out.toString());
     }
 }

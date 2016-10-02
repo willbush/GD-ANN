@@ -1,3 +1,5 @@
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,33 +27,25 @@ class Perceptron {
             exampleIndex++;
         }
 
-        testAccuracy(trainSet, testSet, weights);
+        System.out.println();
+        printAccuracy(trainSet, weights, "Accuracy on training set (%d instances): %s%%\n\n");
+        printAccuracy(testSet, weights, "Accuracy on test set (%d instances): %s%%");
     }
 
-    private static void testAccuracy(DataSet trainSet, DataSet testSet, List<Double> weights) {
-        final int trainInstanceCount = trainSet.getExamples().size();
-        final int testInstanceCount = testSet.getExamples().size();
-        int correctlyClassifiedTrainExamples = 0;
-        int correctlyClassifiedTestExamples = 0;
+    private static void printAccuracy(DataSet set, List<Double> weights, String format) {
+        final int instanceCount = set.getExamples().size();
+        int correctlyClassifiedSetExamples = 0;
 
-        for (int i = 0; i < trainInstanceCount; ++i) {
-            double output = sigmoidDerivative(dotProduct(trainSet.getExample(i), weights));
-            if (Math.round(output) == Math.round(trainSet.getLabel(i))) {
-                correctlyClassifiedTrainExamples++;
+        for (int i = 0; i < instanceCount; ++i) {
+            double output = sigmoid(dotProduct(set.getExample(i), weights));
+            if (Math.round(output) == Math.round(set.getLabel(i))) {
+                correctlyClassifiedSetExamples++;
             }
         }
-
-        for (int i = 0; i < testInstanceCount; ++i) {
-            double output = sigmoidDerivative(dotProduct(testSet.getExample(i), weights));
-            if (Math.round(output) == Math.round(testSet.getLabel(i))) {
-                correctlyClassifiedTestExamples++;
-            }
-        }
-        double trainAccuracy = (double) correctlyClassifiedTrainExamples / trainInstanceCount * 100;
-        double testAccuracy = (double) correctlyClassifiedTestExamples / testInstanceCount * 100;
-        System.out.println();
-        System.out.println(String.format("Accuracy on training set (%d instances): %.1f%%\n", trainInstanceCount, trainAccuracy));
-        System.out.println(String.format("Accuracy on test set (%d instances): %.1f%%", testInstanceCount, testAccuracy));
+        double accuracy = (double) correctlyClassifiedSetExamples / instanceCount * 100;
+        DecimalFormat df = new DecimalFormat(".0");
+        df.setRoundingMode(RoundingMode.DOWN);
+        System.out.print(String.format(format, instanceCount, df.format(accuracy)));
     }
 
     private static void printLearningProgress(int iterationNum, List<String> attributeNames, List<Double> weights, double output) {
