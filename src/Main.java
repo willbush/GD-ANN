@@ -1,3 +1,6 @@
+/**
+ * The entry point of the application.
+ */
 public class Main {
     private static final String PROGRAM_USAGE = "The program requires exactly 4 arguments:\n" +
             "1st argument: the path to the training set\n" +
@@ -13,10 +16,10 @@ public class Main {
             System.exit(1);
         }
         try {
-            DataSet trainSet = DataSet.fromFile(args[0]);
-            DataSet testSet = DataSet.fromFile(args[1]);
-            double learningRate = Double.parseDouble(args[2]);
-            int numOfIterations = Integer.parseInt(args[3]);
+            final DataSet trainSet = DataSet.fromFile(args[0]);
+            final DataSet testSet = DataSet.fromFile(args[1]);
+            final double learningRate = Double.parseDouble(args[2]);
+            final int numOfIterations = Integer.parseInt(args[3]);
 
             Perceptron.learn(trainSet, testSet, learningRate, numOfIterations);
         } catch (Exception e) {

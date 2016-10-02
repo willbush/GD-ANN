@@ -12,6 +12,9 @@ import java.util.Scanner;
 
 import static org.junit.Assert.assertEquals;
 
+/**
+ * These unit tests exercise the functionality of the perceptron learning algorithm.
+ */
 public class PerceptronTest {
     private static final String TRAIN_SET_1_PATH = "resources/dataSet1/train2.dat";
     private static final String TEST_SET_1_PATH = "resources/dataSet1/test2.dat";

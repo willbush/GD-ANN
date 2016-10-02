@@ -29,7 +29,7 @@ class DataSet {
      * @throws IllegalArgumentException if size of attribute names does not equal example size.
      *                                  if size of labels does not equal example size.
      */
-    DataSet(List<String> attributeNames, List<List<Double>> examples, List<Double> labels) {
+    private DataSet(List<String> attributeNames, List<List<Double>> examples, List<Double> labels) {
         if (attributeNames.size() != examples.get(0).size())
             throw new IllegalArgumentException("There must exist an attribute name for each attribute.");
         if (labels.size() != examples.size())
