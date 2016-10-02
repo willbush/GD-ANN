@@ -43,8 +43,8 @@ class Perceptron {
             }
         }
         double accuracy = (double) correctlyClassifiedSetExamples / instanceCount * 100;
-        DecimalFormat df = new DecimalFormat(".0");
-        df.setRoundingMode(RoundingMode.DOWN);
+        DecimalFormat df = new DecimalFormat(".#");
+        df.setRoundingMode(RoundingMode.HALF_EVEN);
         System.out.print(String.format(format, instanceCount, df.format(accuracy)));
     }
 
