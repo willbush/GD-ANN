@@ -802,3 +802,4 @@ After iteration 800: w(A1) = 0.1710, w(A2) = -0.0963, w(A3) = -0.0379, w(A4) = 0
 Accuracy on training set (400 instances): 81.2%
 
 Accuracy on test set (100 instances): 76.0%
+

@@ -28,7 +28,7 @@ class Perceptron {
         }
 
         System.out.println();
-        printAccuracy(trainSet, weights, "Accuracy on training set (%d instances): %s%%\n\n");
+        printAccuracy(trainSet, weights, "Accuracy on training set (%d instances): %s%%\n");
         printAccuracy(testSet, weights, "Accuracy on test set (%d instances): %s%%");
     }
 
@@ -45,7 +45,7 @@ class Perceptron {
         double accuracy = (double) correctlyClassifiedSetExamples / instanceCount * 100;
         DecimalFormat df = new DecimalFormat(".#");
         df.setRoundingMode(RoundingMode.HALF_EVEN);
-        System.out.print(String.format(format, instanceCount, df.format(accuracy)));
+        System.out.println(String.format(format, instanceCount, df.format(accuracy)));
     }
 
     private static void printLearningProgress(int iterationNum, List<String> attributeNames, List<Double> weights, double output) {

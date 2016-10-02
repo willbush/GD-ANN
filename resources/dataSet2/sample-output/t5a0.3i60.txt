@@ -62,3 +62,4 @@ After iteration 60: w(Gee) = 0.1881, w(Fee) = 0.1967, w(Bee) = -0.6989, output =
 Accuracy on training set (4 instances): 75.0%
 
 Accuracy on test set (4 instances): 75.0%
+
