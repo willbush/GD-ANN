@@ -20,6 +20,7 @@ javac Main.java
 java Main ../resources/dataSet1/train2.dat ../resources/dataSet1/test2.dat 0.3 800
 ```
 Note the arguments:
+
 1. the path to the training set
 2. the path to the test set
 3. learning rate
@@ -56,6 +57,7 @@ C:\Users\Will\Documents\GitHub\GD-ANN\src>java Main ../resources/dataSet1/train2
 ```
 
 Again, note the arguments:
+
 1. the path to the training set
 2. the path to the test set
 3. learning rate
